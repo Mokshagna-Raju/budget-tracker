@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Budget Tracker{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+    <!-- Add Stylish Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            display: flex;
+            align-items: center;
+            padding: 20px 30px;
+            background: linear-gradient(to right, #1f1c2c, #928dab);
+            color: white;
+            height: 80px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .navbar img {
+            height: 60px;
+            width: 60px;
+            margin-right: 20px;
+            border-radius: 10px;
+            background-color: white;
+        }
+
+        .navbar h4 {
+            margin: 0;
+            font-size: 28px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            background: linear-gradient(90deg, #ff8a00, #e52e71);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+    </style>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</head>
+<body>
+<body class="{% if request.endpoint in ['login', 'register'] %}auth-bg{% endif %}">
+    <!-- Top Navigation -->
+    <div class="navbar">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo">
+        <h4>Smart Tracker</h4>
+    </div>
+
+    <!-- Main Page Content -->
+    <div class="page-content">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

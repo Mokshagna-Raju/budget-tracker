@@ -1,0 +1,121 @@
+/* General page styles */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Background for Compare Spending page */
+.compare-page {
+    background: linear-gradient(to right, #e3f2fd, #bbdefb);
+    min-height: 100vh;
+    padding: 40px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.compare-page form {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.compare-page h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #0d47a1;
+}
+
+/* styles.css */
+body {
+    background: linear-gradient(to right, #e0eafc, #cfdef3);
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.login-box {
+    background: linear-gradient(to bottom right, #ffecd2, #fcb69f);
+    padding: 30px;
+    max-width: 320px;
+    margin: 100px auto;
+    border-radius: 16px;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+    color: #333;
+    text-align: center;
+}
+
+.login-box h2 {
+    margin-bottom: 20px;
+}
+
+.login-box input[type="text"],
+.login-box input[type="password"],
+.login-box input[type="submit"] {
+    width: 90%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+}
+.login-box h2 {
+    color: #4285F4; /* Google Blue */
+    margin-bottom: 20px;
+}
+
+.register-box {
+    background: linear-gradient(to right, #c9ffbf, #ffafbd); /* mint green to light pink */
+    padding: 30px;
+    max-width: 320px;
+    margin: 100px auto;
+    border-radius: 16px;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+    color: #333;
+    text-align: center;
+}
+
+.register-box input,
+.register-box button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+    border: none;
+}
+
+.register-box a {
+    display: block;
+    margin-top: 15px;
+    color: #007BFF;
+    text-decoration: none;
+}
+
+.msg {
+    color: green;
+    margin-top: 10px;
+}
+.auth-bg {
+    background-image: url('/static/images/background.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+}
+
+a {
+    text-decoration: none;
+    color: #00bcd4;
+}
+
+a:hover {
+    text-decoration: underline;
+    color: #0097a7;
+}
+
+
+

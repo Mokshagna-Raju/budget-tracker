@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pie Chart - Expenses by Category</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <style>
+    body {
+        background-color: #e0f7fa; /* Cool Mint background */
+        color: #00363a; /* Dark teal text */
+        font-family: 'Segoe UI', sans-serif;
+        text-align: center;
+        padding: 30px;
+    }
+
+    .chart-container {
+        width: 80%;
+        max-width: 500px;
+        margin: auto;
+        background-color: #29294d; /* White chart background */
+        padding: 20px;
+        border-radius: 20px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+        color: #00363a;
+    }
+
+    button {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #00838f;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #006064;
+    }
+  </style>
+</head>
+<body>
+    <h2>Expenses by Category</h2>
+
+    <div class="chart-container">
+        <canvas id="pieChart"></canvas>
+    </div>
+    
+    <form method="get" style="text-align: center; margin-bottom: 20px;">
+    <label>Select Month:</label>
+    <input type="month" name="selected_month" value="{{ selected_month or '' }}">
+    <button type="submit">Filter</button>
+    </form>
+
+    <script>
+        const ctx = document.getElementById('pieChart').getContext('2d');
+        const categoryChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: {{ category_totals.keys()|list|tojson }},
+                datasets: [{
+                    label: 'Expenses',
+                    data: {{ category_totals.values()|list|tojson }},
+                    backgroundColor: [
+                        '#3FC1C9', // teal
+                        '#FC5185', // pinkish red
+                        '#FFB400', // yellow
+                        '#364F6B', // dark blue
+                        '#43DDE6', // light aqua
+                        '#F67280', // rose
+                        '#C06C84', // dusty rose
+                        '#6C5B7B'  // muted violet
+                    ],
+                    borderColor: "#0D1B2A",
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: "white",
+                            font: {
+                                family: 'Segoe UI',
+                                size: 14,
+                                weight: 'bold'
+                            }
+                        }
+                    },
+                    datalabels: {
+                        color: '#fff',
+                        formatter: (value, ctx) => {
+                            let sum = 0;
+                            let dataArr = ctx.chart.data.datasets[0].data;
+                            dataArr.map(data => sum += data);
+                            let percentage = (value * 100 / sum).toFixed(1) + "%";
+                            return percentage;
+                        },
+                        font: {
+                            weight: 'bold',
+                            size: 13
+                        }
+                    }
+                }
+            },
+            plugins: [ChartDataLabels]
+        });
+    </script>
+
+    <a href="{{ url_for('dashboard') }}">
+        <button>Back to Dashboard</button>
+    </a>
+</body>
+</html>

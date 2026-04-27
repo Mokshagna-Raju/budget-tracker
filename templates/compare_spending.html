@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Compare Spending</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background: #1f1c2c;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        canvas {
+            background: #2c2f3a;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        h2 {
+            color: #7fffd4;
+            text-align: center;
+        }
+
+        label, select, button {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        input[type="month"], button {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            margin-bottom: 10px;
+        }
+
+        button {
+            background: linear-gradient(to right, #36D1DC, #5B86E5);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .message {
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Compare Monthly Spending</h2>
+    <form method="POST">
+        <label for="month1">Select First Month:</label>
+        <input type="month" name="month1" required value="{{ selected_months[0] if selected_months else '' }}">
+
+        <label for="month2">Select Second Month:</label>
+        <input type="month" name="month2" required value="{{ selected_months[1] if selected_months else '' }}">
+
+        <button type="submit">Compare</button>
+    </form>
+
+    {% if comparison_result %}
+        <div class="message" style="background-color: {{ comparison_result[1] }};">
+            {{ comparison_result[0] }}
+        </div>
+    {% endif %}
+
+    {% if datasets %}
+        <canvas id="compareChart" width="400" height="300"></canvas>
+        <script>
+            const ctx = document.getElementById('compareChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: {{ labels | tojson }},
+                    datasets: {{ datasets | tojson }}
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: 'white'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: 'white'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: 'white'
+                            }
+                        }
+                    }
+                }
+            });
+        </script>
+    {% endif %}
+<a href="{{ url_for('dashboard') }}">
+    <button style="
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        display: block;
+        width: 100%;
+    ">
+        ← Back to Dashboard
+    </button>
+</a>
+</div>
+</body>
+</html>

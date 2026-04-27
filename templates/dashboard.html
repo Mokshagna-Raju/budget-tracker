@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Header with logo and project name -->
+<div style="display: flex; align-items: center; background: linear-gradient(to right, #141E30, #243B55); padding: 10px 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" width="50" height="50" style="margin-right: 15px;">
+    <h1 style="color: #00ffc8; font-family: 'Segoe UI', sans-serif; font-weight: bold; font-size: 28px; margin: 0;">
+        Smart Tracker
+    </h1>
+</div>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>Dashboard - Budget Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Add Chart.js here -->
+    <style>
+    * {
+    font-family: 'Poppins', sans-serif;
+    box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient(to right, #1f1c2c, #928dab);
+        color: #f1f1f1;
+        margin: 0;
+        padding: 20px;
+    }
+
+       .container {
+        max-width: 1000px;
+        margin: auto;
+        background: rgba(255, 255, 255, 0.06);
+        backdrop-filter: blur(8px);
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+
+    h2, h3 {
+        color: #7fffd4;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .logout {
+        float: right;
+        background: linear-gradient(to right, #ff416c, #ff4b2b);
+        color: white;
+        padding: 10px 16px;
+        border: none;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    table th, table td {
+        padding: 14px;
+        text-align: left;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .add-form {
+        background: rgba(0, 0, 0, 0.4);
+        padding: 25px;
+        border-radius: 15px;
+        margin-top: 25px;
+    }
+
+    .add-form input,
+    .add-form select {
+        padding: 12px;
+        margin-bottom: 15px;
+        width: 100%;
+        background: #2d2d3a;
+        border: none;
+        border-radius: 8px;
+        color: white;
+    }
+
+    .add-form button {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        font-weight: bold;
+        color: white;
+        background: linear-gradient(to right, #00c6ff, #0072ff);
+        transition: 0.3s;
+    }
+
+    .add-form button:hover {
+        background: linear-gradient(to right, #0072ff, #00c6ff);
+    }
+
+    button {
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    a button {
+        margin-top: 10px;
+    }
+
+    a {
+        text-decoration: none;
+    }
+
+    label {
+        display: block;
+        margin-top: 15px;
+        font-weight: 600;
+    }
+
+    canvas {
+        margin-top: 20px;
+        background: #1c1b2b;
+        border-radius: 10px;
+        padding: 10px;
+    }
+
+    .goal-bar {
+        background: #333;
+        border-radius: 8px;
+        overflow: hidden;
+        margin-top: 10px;
+    }
+
+    .goal-bar-inner {
+        background: linear-gradient(to right, #56ab2f, #a8e063);
+        padding: 8px 0;
+        text-align: center;
+        color: white;
+    }
+
+    .alert-warning {
+        background: #ff4e50;
+        color: white;
+        padding: 12px;
+        border-radius: 8px;
+        margin-top: 15px;
+        text-align: center;
+    }
+
+    .btn-secondary {
+        background: linear-gradient(to right, #6a11cb, #2575fc);
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        color: white;
+        margin-top: 10px;
+    }
+
+    .btn-secondary:hover {
+        background: linear-gradient(to right, #2575fc, #6a11cb);
+    }
+
+    .delete-button {
+        background-color: #ff4e50;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 6px;
+        border: none;
+    }
+
+    .delete-button:hover {
+        background-color: #ff3b3b;
+    }
+      h2, h3 {
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+     button {
+     font-weight: 600;
+     text-transform: uppercase;
+     letter-spacing: 1px;
+    }
+
+    label {
+     font-weight: 500;
+    }
+
+</style>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <div class="container">
+        <a href="{{ url_for('logout') }}" class="logout">Logout</a>
+        <h2>Welcome, {{ current_user.username }}!</h2>
+
+        {% if goal %}
+    {% set saved = total_income - total_expenses %}
+    {% set progress = (saved / goal.limit_amount * 100) if goal.limit_amount else 0 %}
+
+    <!-- Monthly Goal Card -->
+    <div class="card mt-4 p-3 bg-dark text-white rounded">
+        <h4>🎯 Monthly Goal: ₹{{ goal.limit_amount }}</h4>
+        <p>You've saved ₹{{ saved }} this month ({{ progress|round(1) }}%)</p>
+        <div class="progress" style="height: 20px;">
+            <div class="progress-bar bg-success" role="progressbar" style="width: {{ progress }}%;">
+                {{ progress|round(0) }}%
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="alert alert-warning mt-4">No savings goal set for this month.</div>
+{% endif %}
+
+<!-- 🔍 Month Filter Form for Comparison -->
+<form method="get" style="text-align: center; margin-bottom: 30px;">
+    <label for="selected_month">📅 View Dashboard for Month:</label>
+    <input type="month" id="selected_month" name="selected_month" value="{{ selected_month_label }}">
+
+    <button type="submit">Go</button>
+
+    <label for="compare_month" style="margin-left: 20px;">Compare With:</label>
+    <input type="month" id="compare_month" name="compare_month" value="{{ compare_month_label or '' }}">
+
+    <button type="submit" style="margin-left: 20px;">Apply</button>
+</form>
+
+{% if difference_msg %}
+    <p><strong>📊 Comparison:</strong> {{ difference_msg }}</p>
+{% endif %}
+
+
+<!-- Current Balance -->
+<h3 class="mt-4">Current Balance: ₹{{ balance }}</h3>
+        {% if goal %}
+    {% set saved = total_income - total_expenses %}
+    {% set progress = (saved / goal.limit_amount * 100) if goal else 0 %}
+    <div style="background: #2e2e2e; padding: 15px; border-radius: 10px; margin-top: 15px;">
+        <h3 style="color: #00ffcc;">Monthly Goal: ₹{{ goal }}</h3>
+        <p>Saved so far: ₹{{ saved }} ({{ progress|round(2) }}%)</p>
+        <div style="background: #444; border-radius: 5px; overflow: hidden;">
+            <div style="width: {{ progress }}%; background: #28a745; padding: 6px 0; text-align: center;">
+                {{ progress|round(1) }}%
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+{% if total_income > 0 %}
+    <div style="background: #2c3e50; padding: 20px; border-radius: 10px; margin-top: 20px;">
+        <h3 style="color: #f39c12;">💡 Auto Budget Suggestions</h3>
+        <ul style="list-style: none; padding-left: 0;">
+            <li>🧾 Recommended Spending Limit (50% for needs): ₹{{ (total_income * 0.5)|round(2) }}</li>
+            <li>🎉 Recommended Budget for Wants (30%): ₹{{ (total_income * 0.3)|round(2) }}</li>
+            <li>💰 Recommended Savings Goal (20%): ₹{{ (total_income * 0.2)|round(2) }}</li>
+        </ul>
+    </div>
+{% endif %}
+
+        <div class="add-form">
+            <h3>Add Transaction</h3>
+            <form action="{{ url_for('add_transaction') }}" method="POST">
+                <input type="number" name="amount" step="0.01" placeholder="Amount" required>
+                <label for="category">Category</label>
+<select name="category" id="categorySelect" required onchange="toggleCustomCategory()">
+    <option value="" disabled selected>Select a category</option>
+    <option value="Salary">Salary</option>
+    <option value="Food">Food</option>
+    <option value="Transport">Transport</option>
+    <option value="Utilities">Utilities</option>
+    <option value="Shopping">Shopping</option>
+    <option value="Rent">Rent</option>
+    <option value="Entertainment">Entertainment</option>
+    <option value="Health">Health</option>
+    <option value="Investment">Investment</option>
+    <option value="Other">Other</option>
+    <option value="Custom">Custom</option>
+</select>
+
+<div id="customCategoryDiv" style="display: none; margin-top: 10px;">
+    <input type="text" name="category" id="customCategoryInput" placeholder="Enter custom category">
+</div>
+
+                <select name="type" required>
+                    <option value="income">Income</option>
+                    <option value="expense">Expense</option>
+                </select>
+                <input type="text" name="note" placeholder="Note (optional)">
+                <input type="date" name="date">
+                <button type="submit">Add</button>
+            </form>
+        </div>
+
+        <div class="add-form">
+            <h3>Set Monthly Goal</h3>
+            <form method="POST" action="{{ url_for('set_goal') }}">
+                <input type="number" name="limit_amount" placeholder="Enter goal amount (₹)" required>
+                <input type="month" name="month_year" required>
+                <button type="submit">Set Goal</button>
+            </form>
+        </div>
+
+        <form method="GET" action="{{ url_for('dashboard') }}">
+            <label for="month">Filter by Month:</label>
+            <input type="month" name="month" value="{{ request.args.get('month', '') }}">
+            <button type="submit">Filter</button>
+        </form>
+
+        <a href="{{ url_for('pie_chart') }}">
+            <button style="margin-top: 10px; padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px;">
+                View Pie Chart
+            </button>
+        </a>
+
+        <a href="{{ url_for('spending_trends') }}">
+            <button style="padding: 10px 20px; background-color: #17a2b8; color: white; border: none; border-radius: 5px;">
+                Spending Trends
+            </button>
+        </a>
+        
+
+        <a href="{{ url_for('compare_spending') }}">
+    <button style="padding: 10px 20px; background-color: #28a745; color: white; border: none; border-radius: 5px; margin-top: 10px;">
+        Compare Spending
+            </button>
+        </a>
+
+
+        <h3>Transaction History</h3>
+        <a href="{{ url_for('download_csv') }}" style="background-color: #00cc99; color: white; padding: 8px 12px; border-radius: 5px; text-decoration: none;">Download CSV</a>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Category</th>
+                    <th>Amount</th>
+                    <th>Note</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in transactions %}
+                <tr>
+                    <td>{{ t.date }}</td>
+                    <td>{{ t.type }}</td>
+                    <td>{{ t.category }}</td>
+                    <td>{% if t.type == 'expense' %}-{% endif %}₹{{ t.amount }}</td>
+                    <td>{{ t.note or '' }}</td>
+                    <td>
+                        <form action="{{ url_for('delete_transaction', transaction_id=t.id) }}" method="POST" style="display:inline;">
+                            <button type="submit" style="background-color: #ff5252; color: white; border: none; padding: 5px 10px; border-radius: 5px;">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- 📊 Month Comparison Chart -->
+{% if selected_month_label and current_month_label %}
+<div style="text-align: center; margin-top: 30px;">
+    <h3>Month-to-Month Spending Comparison 📊</h3>
+    <div style="max-width: 500px; margin: auto;">
+        <canvas id="comparisonChart" width="400" height="300"></canvas>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('comparisonChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['{{ selected_month_label }}', '{{ current_month_label }}'],
+                datasets: [{
+                    label: 'Expenses (₹)',
+                    data: [{{ selected_month_expense }}, {{ current_month_expense }}],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(54, 162, 235, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: 'white'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: 'white'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: 'white'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</div>
+{% endif %}
+<h3 style="margin-top: 40px;">Spending by Category</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Category</th>
+            <th>Total Spent (₹)</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% set category_totals = {} %}
+        {% for t in transactions %}
+            {% if t.type == 'expense' %}
+                {% set category_totals = category_totals.update({t.category: category_totals.get(t.category, 0) + t.amount}) or category_totals %}
+            {% endif %}
+        {% endfor %}
+
+        {% for category, total in category_totals.items() %}
+            <tr>
+                <td>{{ category }}</td>
+                <td>₹{{ total }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+    </div>
+<script>
+    function toggleCustomCategory() {
+        const select = document.getElementById('categorySelect');
+        const customDiv = document.getElementById('customCategoryDiv');
+        const customInput = document.getElementById('customCategoryInput');
+
+        if (select.value === 'Custom') {
+            customDiv.style.display = 'block';
+            customInput.required = true;
+            select.name = 'unused';  // prevent default select from being submitted
+        } else {
+            customDiv.style.display = 'none';
+            customInput.required = false;
+            customInput.value = '';
+            select.name = 'category';  // ensure selected option gets submitted
+        }
+    }
+</script>
+
+<!-- SweetAlert2 popup for flashed messages -->
+<script>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        Swal.fire({
+          icon: "{{ 'success' if category == 'success' else 'warning' }}",
+          title: "{{ message }}",
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 5000,
+          timerProgressBar: true,
+        });
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+</script>
+
+</body>
+</html>

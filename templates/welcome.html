@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: 'Segoe UI', sans-serif;
+            color: white;
+        }
+
+        .welcome-container {
+            background: url("{{ url_for('static', filename='images/welcome.png') }}") no-repeat center center;
+            background-size: cover;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .header-text {
+            margin-top: 30px;
+        }
+
+        .header-text h1 {
+            font-size: 3rem;
+            color: #00ffc8;
+            text-shadow: 2px 2px 5px #000;
+            margin-bottom: 10px;
+        }
+
+        .header-text p {
+           font-size: 1.6rem;
+            color: #ffd700;
+            font-style: italic;
+            margin-bottom: 40px;
+            animation: fadeInDown 1.5s ease-out;        
+        }
+
+        .logo-img {
+            width: 140px;
+            height: auto;
+            margin: 20px 0;
+        }
+
+        .get-in-button {
+            font-size: 1.2rem;
+            background: rgba(255, 255, 255, 0.9);
+            color: #243B55;
+            padding: 12px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.3s, color 0.3s;
+            margin-bottom: 30px;
+        }
+
+        .get-in-button:hover {
+            background: #ffffff;
+            color: #000;
+        }
+
+        @media (max-width: 768px) {
+            .header-text h1 {
+                font-size: 2.2rem;
+            }
+            .header-text p {
+                font-size: 1rem;
+            }
+            .logo-img {
+                width: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-container">
+        <div class="header-text">
+            <h1> Welcome To Smart Tracker</h1>
+            <p>Track your income, control your spending, and reach your savings goals—all in one place</p>
+        </div>
+
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="logo-img">
+
+        <a class="get-in-button" href="{{ url_for('login') }}">Let's Get Started</a>
+    </div>
+</body>
+</html>

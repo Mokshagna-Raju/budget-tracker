@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <meta charset="UTF-8">
+    <title>Spending Trends</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+  body {
+    background: linear-gradient(to right, #04364a, #176b87);
+    color: #ffffff;
+    font-family: 'Arial', sans-serif;
+    text-align: center;
+    padding: 30px;
+    margin: 0;
+}
+.chart-wrapper {
+    position: relative;
+    height: 400px;
+    width: 100%;
+    max-width: 900px;
+    margin: auto;
+}
+
+.back-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+</style>
+</head>
+<body>
+    <h2>Spending Trends by Category</h2>
+
+    <div class="chart-wrapper">
+        <canvas id="trendChart"></canvas>
+    </div>
+
+    <br>
+    <a href="{{ url_for('dashboard') }}">
+        <button class="back-button">
+            Back to Dashboard
+        </button>
+    </a>
+    
+    <form method="get" style="text-align: center; margin-bottom: 20px;">
+    <label>Select Month:</label>
+    <input type="month" name="selected_month" value="{{ selected_month or '' }}">
+    <button type="submit">Filter</button>
+    </form>
+
+
+    <script>
+        const ctx = document.getElementById('trendChart').getContext('2d');
+        const trendChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: {{ labels | tojson }},
+                datasets: {{ datasets | tojson }}
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: 'white',
+                            font: { size: 14 }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ₹' + context.parsed.y;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            color: 'white',
+                            font: { size: 12 }
+                        },
+                        grid: { color: '#333' }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: 'white',
+                            font: { size: 12 }
+                        },
+                        grid: { color: '#333' }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
